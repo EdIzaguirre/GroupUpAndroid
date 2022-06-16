@@ -1,8 +1,10 @@
 package com.example.groupupandroid
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.Navigation
 import com.example.groupupandroid.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -11,25 +13,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
-
-
-        // If register button is tapped make register visible
-        binding.registerButton.setOnClickListener {
-            binding.registerFields.visibility = View.VISIBLE
-            binding.loginFields.visibility = View.GONE
-        }
-
-        // If login button is tapped make login visible
-        binding.loginButton.setOnClickListener {
-            binding.registerFields.visibility = View.GONE
-            binding.loginFields.visibility = View.VISIBLE
-        }
-
-        // If register button is pushed swap to maps
-        binding.registerButton
+        val navController = Navigation.findNavController(this,R.id.loginRegisterFragment)
+        //Navigation.setupActionBarWithNavController(this,navController)
     }
 }
