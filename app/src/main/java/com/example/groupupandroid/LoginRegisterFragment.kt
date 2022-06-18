@@ -23,11 +23,7 @@ import com.example.groupupandroid.databinding.FragmentLoginRegisterBinding
 // */
 class LoginRegisterFragment : Fragment(){
     // Getting xml objects
-    private lateinit var binding: FragmentLoginRegisterBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private var binding: FragmentLoginRegisterBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,50 +32,36 @@ class LoginRegisterFragment : Fragment(){
         binding = FragmentLoginRegisterBinding.inflate(layoutInflater)
 
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_login_register, container, false)
+        return binding?.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         // If register button is tapped make register visible
-        binding.registerToggleButton.setOnClickListener {
-            binding.registerFields.visibility = View.VISIBLE
-            binding.loginFields.visibility = View.GONE
+        binding?.registerToggleButton?.setOnClickListener {
+            binding?.registerFields?.visibility = View.VISIBLE
+            binding?.loginFields?.visibility = View.GONE
         }
 
         // If login button is tapped make login visible
-        binding.loginToggleButton.setOnClickListener {
-            binding.registerFields.visibility = View.GONE
-            binding.loginFields.visibility = View.VISIBLE
+        binding?.loginToggleButton?.setOnClickListener {
+            binding?.registerFields?.visibility = View.GONE
+            binding?.loginFields?.visibility = View.VISIBLE
         }
 
         // If login button is pushed swap to maps
-        binding.loginButton.setOnClickListener {
+        binding?.loginButton?.setOnClickListener {
             findNavController().navigate(R.id.loginToHomeScreen)
         }
 
         // If register button is pushed swap to maps
-        binding.registerButton.setOnClickListener {
+        binding?.registerButton?.setOnClickListener {
             findNavController().navigate(R.id.loginToHomeScreen)
         }
-
-        return view
     }
 
-//    companion object {
-//        /**
-//         * Use this factory method to create a new instance of
-//         * this fragment using the provided parameters.
-//         *
-//         * @param param1 Parameter 1.
-//         * @param param2 Parameter 2.
-//         * @return A new instance of fragment loginRegisterFragment.
-//         */
-//        // TODO: Rename and change types and number of parameters
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            LoginRegisterFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
 }
