@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -45,6 +46,13 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         googleMap.setOnMyLocationClickListener(this)
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         enableUserLocation()
+    }
+
+    private var requestLocationPermissions = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        repeat(permissions.entries.size) {
+            // check whether each permission is granted or not
+        }
     }
 
     private lateinit var mMap: GoogleMap
@@ -111,14 +119,14 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
             builder.setTitle(R.string.rationale_title)
                 .setMessage(R.string.rationale_desc)
                 .setPositiveButton("Ok") { _, _ ->
-                    ActivityCompat.requestPermissions((activity as MainActivity), locationPermissions, LOCATION_PERMISSION_REQUEST_CODE)
+                    requestLocationPermissions.launch(locationPermissions)
                 }
             builder.create().show()
             return
         }
 
         // 3. Otherwise, request permission
-        ActivityCompat.requestPermissions((activity as MainActivity), locationPermissions, LOCATION_PERMISSION_REQUEST_CODE)
+        requestLocationPermissions.launch(locationPermissions)
     }
 
     override fun onAttach(context: Context) {
