@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.groupupandroid.databinding.FragmentHomeScreenBinding
 import com.example.groupupandroid.databinding.NavHeaderBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -22,47 +25,65 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.OnSuccessListener
 import java.util.jar.Manifest
 
 class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     GoogleMap.OnMarkerDragListener, GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener {
     private val callback = OnMapReadyCallback { googleMap ->
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-
         mMap = googleMap
-        googleMap.setOnMyLocationButtonClickListener(this)
-        googleMap.setOnMyLocationClickListener(this)
+//        googleMap.setOnMyLocationButtonClickListener(this)
+//        googleMap.setOnMyLocationClickListener(this)
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         enableUserLocation()
+        zoomToUserLocation()
+        mMap.uiSettings.isMyLocationButtonEnabled = false;
     }
 
     private var requestLocationPermissions = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        repeat(permissions.entries.size) {
-            // check whether each permission is granted or not
+        permissions.forEach { actionMap ->
+            when (actionMap.key) {
+                android.Manifest.permission.ACCESS_COARSE_LOCATION -> {
+                    if (actionMap.value) {
+                        // permission granted continue the normal
+                        // workflow of app
+                        Log.i("DEBUG", "permission granted")
+                        mMap.isMyLocationEnabled = true
+                    } else {
+                        // if permission denied then check whether never
+                        // ask again is selected or not by making use of
+                        // !ActivityCompat.shouldShowRequest
+                        // PermissionRationale(requireActivity(),
+                        // Manifest.permission.CAMERA)
+                        Log.i("DEBUG", "permission denied")
+                    }
+                }
+
+                android.Manifest.permission.ACCESS_FINE_LOCATION -> {
+                    if (actionMap.value) {
+                        // permission granted continue the normal
+                        // workflow of app
+                        Log.i("DEBUG", "permission granted")
+                        mMap.isMyLocationEnabled = true
+                    } else {
+                        // if permission denied then check whether never
+                        // ask again is selected or not by making use of
+                        // !ActivityCompat.shouldShowRequest
+                        // PermissionRationale(requireActivity(),
+                        // Manifest.permission.CAMERA)
+                        Log.i("DEBUG", "permission denied")
+                    }
+                }
+            }
         }
     }
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var mMap: GoogleMap
     private lateinit var mContext: Context
 //    private lateinit var mActivity: Activity
-
-    private var locationPermissions = arrayOf(
-        android.Manifest.permission.ACCESS_FINE_LOCATION,
-        android.Manifest.permission.ACCESS_COARSE_LOCATION
-    )
 
     // Getting xml objects
     private var binding: FragmentHomeScreenBinding? = null
@@ -76,6 +97,9 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
 
         binding = FragmentHomeScreenBinding.inflate(layoutInflater)
         headerBinding = NavHeaderBinding.inflate(layoutInflater)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
+
         // Inflate the layout for this fragment
         return binding?.root
     }
@@ -94,6 +118,11 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
             menuItem.isChecked = true
             binding?.drawerLayout?.close()
             true
+        }
+
+        binding?.locationButton?.setOnClickListener {
+            enableUserLocation()
+            zoomToUserLocation()
         }
     }
 
@@ -129,6 +158,17 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         requestLocationPermissions.launch(locationPermissions)
     }
 
+    private fun zoomToUserLocation() {
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                // Got last known location. In some rare situations this can be null.
+                if (location!=null){
+                    val userLocationLatLng = LatLng(location.latitude, location.longitude)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocationLatLng, 13.0F))
+                }
+            }
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
@@ -150,15 +190,6 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         TODO("Not yet implemented")
     }
 
-    companion object {
-        /**
-         * Request code for location permission request.
-         *
-         * @see .onRequestPermissionsResult
-         */
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
-    }
-
     override fun onMyLocationButtonClick(): Boolean {
         TODO("Not yet implemented")
     }
@@ -166,5 +197,16 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     override fun onMyLocationClick(p0: Location) {
         TODO("Not yet implemented")
     }
+
+    companion object {
+        /**
+         * Request code for location permission request.
+         *
+         * @see .onRequestPermissionsResult
+         */
+        private val locationPermissions = arrayOf(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+        )}
 
 }
