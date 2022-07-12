@@ -1,21 +1,31 @@
 package com.example.groupupandroid
 
-import androidx.fragment.app.Fragment
-
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.example.groupupandroid.databinding.FragmentHomeScreenBinding
+import com.example.groupupandroid.databinding.NavHeaderBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import java.util.jar.Manifest
 
-class HomeScreenFragment : Fragment() {
-
+class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
+    GoogleMap.OnMarkerDragListener, GoogleMap.OnMyLocationButtonClickListener,
+    GoogleMap.OnMyLocationClickListener {
     private val callback = OnMapReadyCallback { googleMap ->
         /**
          * Manipulates the map once available.
@@ -29,19 +39,124 @@ class HomeScreenFragment : Fragment() {
         val sydney = LatLng(-34.0, 151.0)
         googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
+        mMap = googleMap
+        googleMap.setOnMyLocationButtonClickListener(this)
+        googleMap.setOnMyLocationClickListener(this)
+        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        enableUserLocation()
     }
+
+    private lateinit var mMap: GoogleMap
+    private lateinit var mContext: Context
+//    private lateinit var mActivity: Activity
+
+    private var locationPermissions = arrayOf(
+        android.Manifest.permission.ACCESS_FINE_LOCATION,
+        android.Manifest.permission.ACCESS_COARSE_LOCATION
+    )
+
+    // Getting xml objects
+    private var binding: FragmentHomeScreenBinding? = null
+    private var headerBinding: NavHeaderBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_home_screen, container, false)
+
+        binding = FragmentHomeScreenBinding.inflate(layoutInflater)
+        headerBinding = NavHeaderBinding.inflate(layoutInflater)
+        // Inflate the layout for this fragment
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+
+        binding?.menuButton?.setOnClickListener {
+            binding?.drawerLayout?.open()
+        }
+
+        binding?.navView?.setNavigationItemSelectedListener { menuItem ->
+            // Handle menu item selected
+            menuItem.isChecked = true
+            binding?.drawerLayout?.close()
+            true
+        }
     }
+
+    private fun enableUserLocation() {
+        // 1. Check if permissions are granted, if so, enable the my location layer
+        if (ContextCompat.checkSelfPermission(mContext,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(mContext,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED) {
+            mMap.isMyLocationEnabled = true
+            return
+        }
+
+        // 2. If a permission rationale dialog should be shown
+        if (ActivityCompat.shouldShowRequestPermissionRationale((activity as MainActivity),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) || ActivityCompat.shouldShowRequestPermissionRationale((activity as MainActivity),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        ) {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(mContext)
+            builder.setTitle(R.string.rationale_title)
+                .setMessage(R.string.rationale_desc)
+                .setPositiveButton("Ok") { _, _ ->
+                    ActivityCompat.requestPermissions((activity as MainActivity), locationPermissions, LOCATION_PERMISSION_REQUEST_CODE)
+                }
+            builder.create().show()
+            return
+        }
+
+        // 3. Otherwise, request permission
+        ActivityCompat.requestPermissions((activity as MainActivity), locationPermissions, LOCATION_PERMISSION_REQUEST_CODE)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
+
+    override fun onMapLongClick(p0: LatLng) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onMarkerDrag(p0: Marker) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onMarkerDragEnd(p0: Marker) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onMarkerDragStart(p0: Marker) {
+        TODO("Not yet implemented")
+    }
+
+    companion object {
+        /**
+         * Request code for location permission request.
+         *
+         * @see .onRequestPermissionsResult
+         */
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    }
+
+    override fun onMyLocationButtonClick(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onMyLocationClick(p0: Location) {
+        TODO("Not yet implemented")
+    }
+
 }

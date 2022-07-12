@@ -14,5 +14,10 @@
         <!-- Customize your theme here. -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowTranslucentStatus">true</item>
+
+    </style>
+
+    <style name="circle">
+        <item name="cornerSize">50%</item>
     </style>
 </resources>
