@@ -33,12 +33,9 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     GoogleMap.OnMyLocationClickListener {
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
-//        googleMap.setOnMyLocationButtonClickListener(this)
-//        googleMap.setOnMyLocationClickListener(this)
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-        enableUserLocation()
-        zoomToUserLocation()
         mMap.uiSettings.isMyLocationButtonEnabled = false;
+        enableUserLocation()
     }
 
     private var requestLocationPermissions = registerForActivityResult(
@@ -51,6 +48,8 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
                         // workflow of app
                         Log.i("DEBUG", "permission granted")
                         mMap.isMyLocationEnabled = true
+                        zoomToUserLocation()
+
                     } else {
                         // if permission denied then check whether never
                         // ask again is selected or not by making use of
@@ -67,6 +66,7 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
                         // workflow of app
                         Log.i("DEBUG", "permission granted")
                         mMap.isMyLocationEnabled = true
+                        zoomToUserLocation()
                     } else {
                         // if permission denied then check whether never
                         // ask again is selected or not by making use of
@@ -122,7 +122,6 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
 
         binding?.locationButton?.setOnClickListener {
             enableUserLocation()
-            zoomToUserLocation()
         }
     }
 
@@ -134,6 +133,7 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED) {
             mMap.isMyLocationEnabled = true
+            zoomToUserLocation()
             return
         }
 
@@ -196,6 +196,16 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
 
     override fun onMyLocationClick(p0: Location) {
         TODO("Not yet implemented")
+    }
+
+    private fun presentLocationNecessaryDialogue() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(mContext)
+        builder.setTitle(R.string.rationale_title)
+            .setMessage(R.string.rationale_desc)
+            .setPositiveButton("Ok") { _, _ ->
+                requestLocationPermissions.launch(locationPermissions)
+            }
+        builder.create().show()
     }
 
     companion object {
