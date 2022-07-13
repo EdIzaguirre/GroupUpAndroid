@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/bottomNavMenu"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/HomeMenuItem"
+            android:icon="@drawable/ic_baseline_home_24"
+            android:title="Home"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/BrowseMenuItem"
+            android:icon="@drawable/ic_baseline_search_24"
+            android:title="Browse" />
+        <item
+            android:id="@+id/FeedMenuItem"
+            android:icon="@drawable/ic_baseline_group_24"
+            android:title="Feed" />
+    </group>
+</menu>
