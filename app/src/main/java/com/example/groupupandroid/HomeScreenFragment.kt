@@ -8,12 +8,16 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.iterator
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.groupupandroid.databinding.FragmentHomeScreenBinding
 import com.example.groupupandroid.databinding.NavHeaderBinding
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -26,11 +30,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.navigation.NavigationView.*
 import java.util.jar.Manifest
 
 class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     GoogleMap.OnMarkerDragListener, GoogleMap.OnMyLocationButtonClickListener,
-    GoogleMap.OnMyLocationClickListener {
+    GoogleMap.OnMyLocationClickListener, OnNavigationItemSelectedListener{
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
@@ -114,9 +120,35 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         }
 
         binding?.navView?.setNavigationItemSelectedListener { menuItem ->
+
+            when (menuItem.itemId) {
+                R.id.HomeMenuItem -> {
+//                    menuItem.isChecked = true
+                    binding?.navView?.setCheckedItem(menuItem)
+                    binding?.drawerLayout?.close()
+                }
+
+                R.id.ProfileMenuItem -> {
+//                    menuItem.isChecked = true
+                    binding?.navView?.setCheckedItem(menuItem)
+                    binding?.drawerLayout?.close()
+                }
+
+                R.id.MyGroupsMenuItem -> {
+//                    menuItem.isChecked = true
+                    binding?.navView?.setCheckedItem(menuItem)
+                    binding?.drawerLayout?.close()
+                }
+
+                R.id.SignOutMenuItem -> {
+//                    menuItem.isChecked = true
+                    findNavController().navigate(R.id.signOutToHomeScreen)
+
+//                    binding?.navView?.setCheckedItem(menuItem)
+//                    binding?.drawerLayout?.close()
+                }
+            }
             // Handle menu item selected
-            menuItem.isChecked = true
-            binding?.drawerLayout?.close()
             true
         }
 
@@ -169,6 +201,7 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
             }
     }
 
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
@@ -208,6 +241,8 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         builder.create().show()
     }
 
+
+
     companion object {
         /**
          * Request code for location permission request.
@@ -218,5 +253,9 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION
         )}
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        TODO("Not yet implemented")
+    }
 
 }

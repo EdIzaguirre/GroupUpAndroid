@@ -58,6 +58,8 @@ class LoginRegisterFragment : Fragment(){
         binding?.registerButton?.setOnClickListener {
             findNavController().navigate(R.id.loginToHomeScreen)
         }
+
+        binding?.materialButtonToggleGroup?.check(binding?.loginToggleButton!!.id)
     }
 
     override fun onDestroyView() {
