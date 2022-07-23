@@ -3,7 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'androidx.navigation.safeargs.kotlin'
-
+  //  id 'org.jetbrains.kotlin.jvm'
+    id "org.jetbrains.kotlin.plugin.serialization" version "1.7.10"
 }
 
 android {
@@ -61,4 +62,14 @@ dependencies {
 
     // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    // Networking Plugins
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-android:$ktor_version")
+
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+
+    //implementation("io.ktor:ktor-client-cio:$ktor_version")
+    //implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    //implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 }
