@@ -36,7 +36,7 @@ import java.util.jar.Manifest
 
 class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     GoogleMap.OnMarkerDragListener, GoogleMap.OnMyLocationButtonClickListener,
-    GoogleMap.OnMyLocationClickListener, OnNavigationItemSelectedListener{
+    GoogleMap.OnMyLocationClickListener{
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
@@ -50,35 +50,21 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
             when (actionMap.key) {
                 android.Manifest.permission.ACCESS_COARSE_LOCATION -> {
                     if (actionMap.value) {
-                        // permission granted continue the normal
-                        // workflow of app
                         Log.i("DEBUG", "permission granted")
                         mMap.isMyLocationEnabled = true
                         zoomToUserLocation()
 
                     } else {
-                        // if permission denied then check whether never
-                        // ask again is selected or not by making use of
-                        // !ActivityCompat.shouldShowRequest
-                        // PermissionRationale(requireActivity(),
-                        // Manifest.permission.CAMERA)
                         Log.i("DEBUG", "permission denied")
                     }
                 }
 
                 android.Manifest.permission.ACCESS_FINE_LOCATION -> {
                     if (actionMap.value) {
-                        // permission granted continue the normal
-                        // workflow of app
                         Log.i("DEBUG", "permission granted")
                         mMap.isMyLocationEnabled = true
                         zoomToUserLocation()
                     } else {
-                        // if permission denied then check whether never
-                        // ask again is selected or not by making use of
-                        // !ActivityCompat.shouldShowRequest
-                        // PermissionRationale(requireActivity(),
-                        // Manifest.permission.CAMERA)
                         Log.i("DEBUG", "permission denied")
                     }
                 }
@@ -123,32 +109,24 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
 
             when (menuItem.itemId) {
                 R.id.HomeMenuItem -> {
-//                    menuItem.isChecked = true
                     binding?.navView?.setCheckedItem(menuItem)
                     binding?.drawerLayout?.close()
                 }
 
                 R.id.ProfileMenuItem -> {
-//                    menuItem.isChecked = true
                     binding?.navView?.setCheckedItem(menuItem)
                     binding?.drawerLayout?.close()
                 }
 
                 R.id.MyGroupsMenuItem -> {
-//                    menuItem.isChecked = true
                     binding?.navView?.setCheckedItem(menuItem)
                     binding?.drawerLayout?.close()
                 }
 
                 R.id.SignOutMenuItem -> {
-//                    menuItem.isChecked = true
                     findNavController().navigate(R.id.signOutToHomeScreen)
-
-//                    binding?.navView?.setCheckedItem(menuItem)
-//                    binding?.drawerLayout?.close()
                 }
             }
-            // Handle menu item selected
             true
         }
 
@@ -176,13 +154,7 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
             )
         ) {
-            val builder: AlertDialog.Builder = AlertDialog.Builder(mContext)
-            builder.setTitle(R.string.rationale_title)
-                .setMessage(R.string.rationale_desc)
-                .setPositiveButton("Ok") { _, _ ->
-                    requestLocationPermissions.launch(locationPermissions)
-                }
-            builder.create().show()
+            presentLocationNecessaryDialogue()
             return
         }
 
@@ -241,21 +213,9 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         builder.create().show()
     }
 
-
-
     companion object {
-        /**
-         * Request code for location permission request.
-         *
-         * @see .onRequestPermissionsResult
-         */
         private val locationPermissions = arrayOf(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION
         )}
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        TODO("Not yet implemented")
-    }
-
 }
