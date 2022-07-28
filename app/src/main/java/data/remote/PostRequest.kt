@@ -3,9 +3,8 @@ package data.remote
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PostResponse (
+data class PostRequest (
     val body: String,
     val title: String,
-    val id: Int,
     val userId: Int
 )
