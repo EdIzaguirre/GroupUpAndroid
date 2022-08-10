@@ -1,54 +1,57 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
-    id 'androidx.navigation.safeargs.kotlin'
+    id ("com.android.application")
+    id ("org.jetbrains.kotlin.android")
+    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id ("androidx.navigation.safeargs.kotlin")
     // This dependency apparently is already imported
     //id "org.jetbrains.kotlin.plugin.serialization" version "1.7.10"
 }
 
 android {
-    compileSdk 32
+    compileSdk = 32
 
     buildFeatures {
         viewBinding = true
     }
 
     defaultConfig {
-        applicationId "com.example.groupupandroid"
-        minSdk 21
-        targetSdk 32
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        applicationId = "com.example.groupupandroid"
+        minSdk = 21
+        targetSdk = 32
+        versionCode = 1
+        versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'com.google.android.gms:play-services-maps:18.1.0'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'com.google.android.material:material:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.gms:play-services-location:20.0.0'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    val ktor_version = "2.0.3"
+    val nav_version = "2.5.0"
+
+    implementation ("androidx.core:core-ktx:1.8.0")
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("androidx.appcompat:appcompat:1.4.2")
+    implementation ("com.google.android.material:material:1.6.1")
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation ("com.google.android.gms:play-services-location:20.0.0")
+    testImplementation ("junit:junit:4.13.2")
+    androidTestImplementation ("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
 
     // Kotlin
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
