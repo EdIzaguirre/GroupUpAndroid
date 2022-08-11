@@ -3,8 +3,7 @@ plugins {
     id ("org.jetbrains.kotlin.android")
     id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id ("androidx.navigation.safeargs.kotlin")
-    // This dependency apparently is already imported
-    //id "org.jetbrains.kotlin.plugin.serialization" version "1.7.10"
+    kotlin("plugin.serialization") version "1.7.10"
 }
 
 android {
@@ -40,7 +39,7 @@ android {
 
 dependencies {
     val ktor_version = "2.0.3"
-    val nav_version = "2.5.0"
+    val nav_version = "2.5.1"
 
     implementation ("androidx.core:core-ktx:1.8.0")
     implementation ("com.google.android.gms:play-services-maps:18.1.0")
@@ -71,6 +70,8 @@ dependencies {
     implementation("io.ktor:ktor-client-android:$ktor_version")
     implementation("io.ktor:ktor-client-logging:$ktor_version")
     implementation("io.ktor:ktor-client-serialization:$ktor_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0-RC")
+
 
     // Specifying kotlinx serialization
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
