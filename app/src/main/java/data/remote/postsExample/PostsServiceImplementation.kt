@@ -1,11 +1,10 @@
-package data.remote
+package data.remote.postsExample
 
+import data.remote.HttpRoutes
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.util.*
 import java.lang.Exception
 
 class PostsServiceImplementation(private val client: HttpClient): PostsService

@@ -1,6 +1,5 @@
 package com.example.groupupandroid
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
@@ -8,15 +7,13 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.iterator
-import androidx.core.view.size
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.groupupandroid.databinding.FragmentHomeScreenBinding
 import com.example.groupupandroid.databinding.NavHeaderBinding
@@ -28,11 +25,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.material.navigation.NavigationView
-import com.google.android.material.navigation.NavigationView.*
-import java.util.jar.Manifest
+import data.remote.postsExample.PostResponse
+import data.remote.postsExample.PostsService
+import kotlinx.coroutines.launch
 
 class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     GoogleMap.OnMarkerDragListener, GoogleMap.OnMyLocationButtonClickListener,
@@ -77,6 +72,12 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     private lateinit var mContext: Context
 //    private lateinit var mActivity: Activity
 
+    // Networking
+    private lateinit var service: PostsService
+
+    // Data
+    private var posts: List<PostResponse> = emptyList()
+
     // Getting xml objects
     private var binding: FragmentHomeScreenBinding? = null
     private var headerBinding: NavHeaderBinding? = null
@@ -92,8 +93,19 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
 
+        lifecycleScope.launch {
+            getPosts()
+        }
+
         // Inflate the layout for this fragment
         return binding?.root
+    }
+
+    private suspend fun getPosts() {
+        service = PostsService.create()
+        posts = service.getPosts()
+        println("Here are the posts")
+        print(posts::class.simpleName)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

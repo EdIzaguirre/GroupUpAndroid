@@ -46,7 +46,6 @@ dependencies {
     implementation ("androidx.appcompat:appcompat:1.4.2")
     implementation ("com.google.android.material:material:1.6.1")
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation ("com.google.android.gms:play-services-location:20.0.0")
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
@@ -62,6 +61,9 @@ dependencies {
     // Testing Navigation
     androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
 
+    // Google Maps
+    implementation ("com.google.android.gms:play-services-location:20.0.0")
+
     // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
@@ -71,7 +73,6 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:$ktor_version")
     implementation("io.ktor:ktor-client-serialization:$ktor_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0-RC")
-
 
     // Specifying kotlinx serialization
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
