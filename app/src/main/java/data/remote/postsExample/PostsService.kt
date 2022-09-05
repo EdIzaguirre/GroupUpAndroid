@@ -18,7 +18,7 @@ interface PostsService {
             return PostsServiceImplementation (
                 client = HttpClient(Android) {
                     install(Logging) {
-                        level = LogLevel.BODY
+                        level = LogLevel.NONE
                     }
 
                     install(ContentNegotiation) {

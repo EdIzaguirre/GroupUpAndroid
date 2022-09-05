@@ -15,19 +15,19 @@ data class Group (
     var id: Int?
 )
 
-enum class Categories {
-    academic,
-    arts,
-    club_sports,
-    community_service,
-    cultural,
-    educational,
-    health_and_wellness,
-    hobbies,
-    political,
-    religous,
-    social,
-    other;
+enum class Categories (val categoryNumber: Int) {
+    academic(1),
+    arts(2),
+    club_sports(3),
+    community_service(4),
+    cultural(5),
+    educational(6),
+    health_and_wellness(7),
+    hobbies(8),
+    political(9),
+    religous(10),
+    social(11),
+    other(12);
 }
 
 val stockPhotoURLs = arrayOf(

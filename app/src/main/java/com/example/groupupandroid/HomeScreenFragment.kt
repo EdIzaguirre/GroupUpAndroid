@@ -28,6 +28,10 @@ import com.google.android.gms.maps.model.Marker
 import data.remote.postsExample.PostResponse
 import data.remote.postsExample.PostsService
 import kotlinx.coroutines.launch
+import models.Categories
+import models.Group
+import models.GroupPlacemark
+import models.stockPhotoURLs
 
 class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     GoogleMap.OnMarkerDragListener, GoogleMap.OnMyLocationButtonClickListener,
@@ -145,6 +149,70 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         binding?.locationButton?.setOnClickListener {
             enableUserLocation()
         }
+
+        val userGroups = createRandomGroups()
+        print(userGroups)
+    }
+
+    private fun createRandomGroups(): Array<Group> {
+        // Creating random group #1
+        val name = "Prestigous Univeristy Study Group"
+        val category = Categories.academic
+        val location = LatLng(37.0, 125.0)
+        val groupPlacemark = GroupPlacemark(
+            locationName = "University Campus",
+            streetNumber = "11732",
+            street = "Doma Stret",
+            city = "Dope Town",
+            state = "Maine",
+            zipCode = "90015",
+            country = "Malaysia"
+        )
+        val description = "This is a group for people that like to study!"
+        val members = 4
+        val imageURL = null
+        val id = null
+
+        val group1 = Group(
+            name = name,
+            category = category,
+            location = location,
+            groupPlacemark = groupPlacemark,
+            description = description,
+            members = members,
+            imageURL = imageURL,
+            id = id
+        )
+
+        // Creating random group #2
+        val name2 = "We Love Animals"
+        val category2 = Categories.hobbies
+        val location2 = LatLng(40.0, 119.0)
+        val groupPlacemark2 = GroupPlacemark(
+            locationName = "Mountain View Zoo",
+            streetNumber = "1244",
+            street = "Lovers Lane",
+            city = "Mountain",
+            state = "Florida",
+            zipCode = "19395",
+            country = "Denmark"
+        )
+        val description2 = "We love animals!"
+        val members2 = 22
+        val imageURL2 = stockPhotoURLs[1]
+        val id2 = 12412555
+
+        val group2 = Group(
+            name = name2,
+            category = category2,
+            location = location2,
+            groupPlacemark = groupPlacemark2,
+            description = description2,
+            members = members2,
+            imageURL = imageURL2,
+            id = id2
+        )
+        return arrayOf(group1, group2)
     }
 
     private fun enableUserLocation() {
