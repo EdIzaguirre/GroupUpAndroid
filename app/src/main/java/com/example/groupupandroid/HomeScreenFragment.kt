@@ -3,6 +3,7 @@ package com.example.groupupandroid
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -33,6 +35,7 @@ import models.Categories
 import models.Group
 import models.GroupPlacemark
 import models.stockPhotoURLs
+
 
 class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     GoogleMap.OnMarkerDragListener, GoogleMap.OnMyLocationButtonClickListener,
@@ -171,13 +174,13 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
 
     private fun createRandomGroups(): Array<Group> {
         // Creating random group #1
-        val name = "Prestigous Univeristy Study Group"
+        val name = "Prestigious University Study Group"
         val category = Categories.academic
         val location = LatLng(37.4, -122.1)
         val groupPlacemark = GroupPlacemark(
             locationName = "University Campus",
             streetNumber = "11732",
-            street = "Doma Stret",
+            street = "Doma Street",
             city = "Dope Town",
             state = "Maine",
             zipCode = "90015",
@@ -263,7 +266,16 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
                 // Got last known location. In some rare situations this can be null.
                 if (location!=null){
                     val userLocationLatLng = LatLng(location.latitude, location.longitude)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocationLatLng, 13.0F))
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocationLatLng, 11.0F))
+
+                    mMap.addCircle(CircleOptions()
+                        .center(LatLng(location.latitude, location.longitude))
+                        .radius(9656.06)
+                            //TODO: Replace this with Distance object (6 miles)
+                        .strokeColor(Color.BLUE)
+                        .strokeWidth(1.0F)
+                        .fillColor(0x220000FF))
+
                 }
             }
     }
