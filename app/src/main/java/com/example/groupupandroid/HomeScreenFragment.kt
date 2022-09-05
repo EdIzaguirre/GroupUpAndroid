@@ -25,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import data.remote.postsExample.PostResponse
 import data.remote.postsExample.PostsService
 import kotlinx.coroutines.launch
@@ -41,6 +42,11 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         mMap.uiSettings.isMyLocationButtonEnabled = false;
         enableUserLocation()
+
+        // TODO: Replace this with an actual import statement
+        val userGroups = createRandomGroups()
+
+        addGroupMarkersToMap(userGroups)
     }
 
     private var requestLocationPermissions = registerForActivityResult(
@@ -149,16 +155,25 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         binding?.locationButton?.setOnClickListener {
             enableUserLocation()
         }
+    }
 
-        val userGroups = createRandomGroups()
-        print(userGroups)
+    private fun addGroupMarkersToMap(userGroups: Array<Group>) {
+        for (group in userGroups) {
+            val latlng = group.location
+            val title = group.name
+            mMap.addMarker(
+                MarkerOptions()
+                    .position(latlng)
+                    .title(title)
+            )
+        }
     }
 
     private fun createRandomGroups(): Array<Group> {
         // Creating random group #1
         val name = "Prestigous Univeristy Study Group"
         val category = Categories.academic
-        val location = LatLng(37.0, 125.0)
+        val location = LatLng(37.4, -122.1)
         val groupPlacemark = GroupPlacemark(
             locationName = "University Campus",
             streetNumber = "11732",
@@ -187,7 +202,7 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         // Creating random group #2
         val name2 = "We Love Animals"
         val category2 = Categories.hobbies
-        val location2 = LatLng(40.0, 119.0)
+        val location2 = LatLng(37.41, -122.08)
         val groupPlacemark2 = GroupPlacemark(
             locationName = "Mountain View Zoo",
             streetNumber = "1244",
