@@ -2,18 +2,44 @@ package models
 
 import com.google.android.gms.maps.model.LatLng
 import io.ktor.http.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialInfo
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import java.net.URL
 
+@Serializable
 data class Group (
+    @SerialName("location_name")
     var name: String,
     var category: Categories,
-    var location: LatLng,
+    @SerialName("lat")
+    var latitude: Double,
+    @SerialName("lon")
+    var longitude: Double,
     var groupPlacemark: GroupPlacemark,
     var description: String?,
-    var members: Int?,
+    @SerialName("url")
+    @Serializable(with = LinkSerializer::class)
     var imageURL: URL?,
     var id: Int?
 )
+
+object LinkSerializer : KSerializer<URL?> {
+    override val descriptor = PrimitiveSerialDescriptor("URL", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: URL?) {
+        encoder.encodeString(value.toString())
+    }
+
+    override fun deserialize(decoder: Decoder): URL? {
+        return URL(decoder.decodeString())
+    }
+}
 
 enum class Categories (val categoryNumber: Int) {
     academic(1),

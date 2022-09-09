@@ -19,6 +19,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.groupupandroid.databinding.FragmentHomeScreenBinding
 import com.example.groupupandroid.databinding.NavHeaderBinding
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -28,13 +30,11 @@ import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import data.remote.postsExample.PostResponse
-import data.remote.postsExample.PostsService
+import data.remote.postsExample.GroupService
 import kotlinx.coroutines.launch
 import models.Categories
 import models.Group
 import models.GroupPlacemark
-import models.stockPhotoURLs
 
 
 class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
@@ -46,10 +46,10 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         mMap.uiSettings.isMyLocationButtonEnabled = false;
         enableUserLocation()
 
-        // TODO: Replace this with an actual import statement
-        val userGroups = createRandomGroups()
-
-        addGroupMarkersToMap(userGroups)
+    // TODO: Replace this with an actual import statement
+//        val userGroups = createRandomGroups()
+//
+//        addGroupMarkersToMap(userGroups)
     }
 
     private var requestLocationPermissions = registerForActivityResult(
@@ -60,8 +60,12 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
                     if (actionMap.value) {
                         Log.i("DEBUG", "permission granted")
                         mMap.isMyLocationEnabled = true
-                        zoomToUserLocation()
-
+                        fusedLocationClient.lastLocation
+                            .addOnSuccessListener { location : Location? ->
+                                if (location!=null) {
+                                    zoomToUserLocation(location)
+                                }
+                            }
                     } else {
                         Log.i("DEBUG", "permission denied")
                     }
@@ -71,7 +75,12 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
                     if (actionMap.value) {
                         Log.i("DEBUG", "permission granted")
                         mMap.isMyLocationEnabled = true
-                        zoomToUserLocation()
+                        fusedLocationClient.lastLocation
+                            .addOnSuccessListener { location : Location? ->
+                                if (location!=null) {
+                                    zoomToUserLocation(location)
+                                }
+                            }
                     } else {
                         Log.i("DEBUG", "permission denied")
                     }
@@ -81,19 +90,34 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
     private lateinit var mMap: GoogleMap
     private lateinit var mContext: Context
-//    private lateinit var mActivity: Activity
 
     // Networking
-    private lateinit var service: PostsService
+    private lateinit var service: GroupService
 
     // Data
-    private var posts: List<PostResponse> = emptyList()
+    private var groups: List<Group> = emptyList()
 
     // Getting xml objects
     private var binding: FragmentHomeScreenBinding? = null
     private var headerBinding: NavHeaderBinding? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                val latestLocation = locationResult.locations.last()
+                zoomToUserLocation(latestLocation)
+
+                //                for (location in locationResult.locations){
+//                    // Update UI with location data
+//                    // ...
+//                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -106,19 +130,33 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
 
-        lifecycleScope.launch {
-            getPosts()
-        }
+//        lifecycleScope.launch {
+//            getGroups()
+//        }
+//        fusedLocationClient.lastLocation
+//            .addOnSuccessListener {location: Location? ->
+//                userLocation = location
+//            }
+//
+//        if (userLocation!= null) {
+//            lifecycleScope.launch {
+//                getGroups()
+//            }
+//        }
 
         // Inflate the layout for this fragment
         return binding?.root
     }
 
-    private suspend fun getPosts() {
-        service = PostsService.create()
-        posts = service.getPosts()
-        println("Here are the posts")
-        print(posts::class.simpleName)
+    private suspend fun getGroups(latestLocation: Location) {
+        service = GroupService.create()
+        groups = service.getGroups(
+            lat = latestLocation.latitude.toString(),
+            lon = latestLocation.longitude.toString(),
+            radius = 9656.06.toString())
+
+        addGroupMarkersToMap(groups)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -158,11 +196,12 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         binding?.locationButton?.setOnClickListener {
             enableUserLocation()
         }
+
     }
 
-    private fun addGroupMarkersToMap(userGroups: Array<Group>) {
+    private fun addGroupMarkersToMap(userGroups: List<Group>) {
         for (group in userGroups) {
-            val latlng = group.location
+            val latlng = LatLng(group.latitude,group.longitude)
             val title = group.name
             mMap.addMarker(
                 MarkerOptions()
@@ -176,7 +215,8 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         // Creating random group #1
         val name = "Prestigious University Study Group"
         val category = Categories.academic
-        val location = LatLng(37.4, -122.1)
+        val latitude = 37.4
+        val longitude = -122.1
         val groupPlacemark = GroupPlacemark(
             locationName = "University Campus",
             streetNumber = "11732",
@@ -187,50 +227,20 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
             country = "Malaysia"
         )
         val description = "This is a group for people that like to study!"
-        val members = 4
         val imageURL = null
         val id = null
 
         val group1 = Group(
             name = name,
             category = category,
-            location = location,
+            latitude = latitude,
+            longitude = longitude,
             groupPlacemark = groupPlacemark,
             description = description,
-            members = members,
             imageURL = imageURL,
             id = id
         )
-
-        // Creating random group #2
-        val name2 = "We Love Animals"
-        val category2 = Categories.hobbies
-        val location2 = LatLng(37.41, -122.08)
-        val groupPlacemark2 = GroupPlacemark(
-            locationName = "Mountain View Zoo",
-            streetNumber = "1244",
-            street = "Lovers Lane",
-            city = "Mountain",
-            state = "Florida",
-            zipCode = "19395",
-            country = "Denmark"
-        )
-        val description2 = "We love animals!"
-        val members2 = 22
-        val imageURL2 = stockPhotoURLs[1]
-        val id2 = 12412555
-
-        val group2 = Group(
-            name = name2,
-            category = category2,
-            location = location2,
-            groupPlacemark = groupPlacemark2,
-            description = description2,
-            members = members2,
-            imageURL = imageURL2,
-            id = id2
-        )
-        return arrayOf(group1, group2)
+        return arrayOf(group1)
     }
 
     private fun enableUserLocation() {
@@ -241,7 +251,12 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED) {
             mMap.isMyLocationEnabled = true
-            zoomToUserLocation()
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location : Location? ->
+                    if (location!=null) {
+                        zoomToUserLocation(location)
+                    }
+                }
             return
         }
 
@@ -260,26 +275,19 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         requestLocationPermissions.launch(locationPermissions)
     }
 
-    private fun zoomToUserLocation() {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location : Location? ->
-                // Got last known location. In some rare situations this can be null.
-                if (location!=null){
-                    val userLocationLatLng = LatLng(location.latitude, location.longitude)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocationLatLng, 11.0F))
 
-                    mMap.addCircle(CircleOptions()
-                        .center(LatLng(location.latitude, location.longitude))
-                        .radius(9656.06)
-                            //TODO: Replace this with Distance object (6 miles)
-                        .strokeColor(Color.BLUE)
-                        .strokeWidth(1.0F)
-                        .fillColor(0x220000FF))
 
-                }
-            }
+    private fun zoomToUserLocation(latestLocation: Location) {
+        val userLocationLatLng = LatLng(latestLocation.latitude, latestLocation.longitude)
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocationLatLng, 11.0F))
+        mMap.addCircle(CircleOptions()
+            .center(userLocationLatLng)
+            .radius(9656.06)
+                //TODO: Replace this with Distance object (6 miles)
+            .strokeColor(Color.BLUE)
+            .strokeWidth(1.0F)
+            .fillColor(0x220000FF))
     }
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

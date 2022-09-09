@@ -1,11 +1,18 @@
 package models
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 class GroupPlacemark (
+    @SerialName("location_name")
     var locationName: String,
+    @SerialName("street_number")
     var streetNumber: String?,
     var street: String?,
     var city: String?,
     var state: String?,
+    @SerialName("zip_code")
     var zipCode: String?,
     var country: String?
 )
