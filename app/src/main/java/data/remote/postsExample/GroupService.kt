@@ -17,7 +17,7 @@ interface GroupService {
             return GroupServiceImplementation (
                 client = HttpClient(Android) {
                     install(Logging) {
-                        level = LogLevel.NONE
+                        level = LogLevel.ALL
                     }
 
                     install(ContentNegotiation) {

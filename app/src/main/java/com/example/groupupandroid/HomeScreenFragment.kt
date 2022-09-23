@@ -26,6 +26,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -104,6 +105,9 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
     private var binding: FragmentHomeScreenBinding? = null
     private var headerBinding: NavHeaderBinding? = null
 
+    // Stores reference to user circle
+    private var userCircle: Circle? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         locationCallback = object : LocationCallback() {
@@ -154,6 +158,8 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
             lat = latestLocation.latitude.toString(),
             lon = latestLocation.longitude.toString(),
             radius = 9656.06.toString())
+
+        print(groups)
 
         addGroupMarkersToMap(groups)
 
@@ -211,37 +217,37 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         }
     }
 
-    private fun createRandomGroups(): Array<Group> {
-        // Creating random group #1
-        val name = "Prestigious University Study Group"
-        val category = Categories.academic
-        val latitude = 37.4
-        val longitude = -122.1
-        val groupPlacemark = GroupPlacemark(
-            locationName = "University Campus",
-            streetNumber = "11732",
-            street = "Doma Street",
-            city = "Dope Town",
-            state = "Maine",
-            zipCode = "90015",
-            country = "Malaysia"
-        )
-        val description = "This is a group for people that like to study!"
-        val imageURL = null
-        val id = null
-
-        val group1 = Group(
-            name = name,
-            category = category,
-            latitude = latitude,
-            longitude = longitude,
-            groupPlacemark = groupPlacemark,
-            description = description,
-            imageURL = imageURL,
-            id = id
-        )
-        return arrayOf(group1)
-    }
+//    private fun createRandomGroups(): Array<Group> {
+//        // Creating random group #1
+//        val name = "Prestigious University Study Group"
+//        val category = Categories.academic
+//        val latitude = 37.4
+//        val longitude = -122.1
+//        val groupPlacemark = GroupPlacemark(
+//            locationName = "University Campus",
+//            streetNumber = "11732",
+//            street = "Doma Street",
+//            city = "Dope Town",
+//            state = "Maine",
+//            zipCode = "90015",
+//            country = "Malaysia"
+//        )
+//        val description = "This is a group for people that like to study!"
+//        val imageURL = null
+//        val id = null
+//
+//        val group1 = Group(
+//            name = name,
+//            category = category,
+//            latitude = latitude,
+//            longitude = longitude,
+//            groupPlacemark = groupPlacemark,
+//            description = description,
+//            imageURL = imageURL,
+//            id = id
+//        )
+//        return arrayOf(group1)
+//    }
 
     private fun enableUserLocation() {
         // 1. Check if permissions are granted, if so, enable the my location layer
@@ -254,6 +260,9 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location : Location? ->
                     if (location!=null) {
+                        lifecycleScope.launch {
+                            getGroups(location)
+                        }
                         zoomToUserLocation(location)
                     }
                 }
@@ -275,12 +284,11 @@ class HomeScreenFragment : Fragment(), GoogleMap.OnMapLongClickListener,
         requestLocationPermissions.launch(locationPermissions)
     }
 
-
-
     private fun zoomToUserLocation(latestLocation: Location) {
         val userLocationLatLng = LatLng(latestLocation.latitude, latestLocation.longitude)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocationLatLng, 11.0F))
-        mMap.addCircle(CircleOptions()
+        userCircle?.remove()
+        userCircle = mMap.addCircle(CircleOptions()
             .center(userLocationLatLng)
             .radius(9656.06)
                 //TODO: Replace this with Distance object (6 miles)

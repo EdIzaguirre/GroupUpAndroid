@@ -14,18 +14,36 @@ import java.net.URL
 
 @Serializable
 data class Group (
-    @SerialName("location_name")
+    @SerialName("name")
     var name: String,
-    var category: Categories,
+    @SerialName("category")
+    var category: Int,
     @SerialName("lat")
     var latitude: Double,
     @SerialName("lon")
     var longitude: Double,
-    var groupPlacemark: GroupPlacemark,
+    @SerialName("location_name")
+    var location_name: String?,
+    @SerialName("street_number")
+    var street_number: String?,
+    @SerialName("street")
+    var street: String?,
+    @SerialName("city")
+    var city: String?,
+    @SerialName("state")
+    var state: String?,
+    @SerialName("zip_code")
+    var zip_code: String?,
+    @SerialName("country")
+    var country: String?,
+    @SerialName("description")
     var description: String?,
-    @SerialName("url")
+    @SerialName("image_url")
     @Serializable(with = LinkSerializer::class)
-    var imageURL: URL?,
+    var image_url: URL?,
+    @SerialName("url")
+    var url: String?,
+    @SerialName("id")
     var id: Int?
 )
 
